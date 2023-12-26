@@ -1,5 +1,5 @@
 import mysql.connector
-from flask import Flask, url_for, request, render_template
+from flask import Flask, url_for, request, render_template, send_from_directory
 import random
 import uuid
 from datetime import date
@@ -81,11 +81,14 @@ def show_blogs():
     query = cursor.execute("SELECT post_title, post_content, publication_date FROM blog_posts")
     blog_data = render_dictionary(query)
     
-
     
     return render_template("home_page.html", blog_data = blog_data)
 
 
+@app.route("/images/<filename>")
+def render_image(filename):
+    return send_from_directory(app.config['images'], filename)
+    
 
 
 
