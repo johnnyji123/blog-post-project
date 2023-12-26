@@ -1,6 +1,8 @@
 import mysql.connector
 from flask import Flask, url_for, request, render_template
-
+import random
+import uuid
+from datetime import date
 
 
 
@@ -42,9 +44,20 @@ def render_dictionary(query):
 
 @app.route("/post_blog", methods = ["GET", "POST"])
 def post_blog():
-    
+    if request.method == "POST":
+        title = request.form.get("post_title")
+        content = request.form.get("post_content")
+        image = request.form.get("featured_image")
+        random_post_id = uuid.uuid4()
+        random_author_id = uuid.uuid4()
+        publication_date = date.today()
+        
+        
+        
+        
     return render_template("post_blog.html")
 
 
-if __name__ == ("__main__"):
-    app.run(debug = True, use_reloader = False)
+
+#if __name__ == ("__main__"):
+    #app.run(debug = True, use_reloader = False)
