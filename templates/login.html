@@ -9,11 +9,20 @@
   </head>
   <body>
       <h2> Login page</h2>
-      <form>
+      <form action = "{{url_for('check_login')}}" method = "POST">
           <input type = "text" placeholder = "enter email" name = "email"></input>
           <input type = "text" placeholder = "enter password" name = "password"></input>
           <input type = "submit" value = "Submit"></input>
       </form>
+      <div>
+          {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                  {% for message in messages %}
+                  <h2>{{message}}</h2>
+                  {% endfor %}
+              {% endif %}
+           {% endwith %}
+      </div>
 	<script src="index.js"></script>
   </body>
 </html>

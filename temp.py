@@ -1,5 +1,5 @@
 import mysql.connector
-from flask import Flask, url_for, request, render_template, send_from_directory, flash
+from flask import Flask, url_for, request, render_template, send_from_directory, flash, redirect, url_for
 import random
 import uuid
 from datetime import date
@@ -94,6 +94,7 @@ def render_images(filename):
     return send_from_directory(app.config['images'], filename)
 
 
+
 @app.route("/view_blog/<post_id>", methods = ["GET", "POST"])
 def view_blog(post_id):
     query = cursor.execute("SELECT post_id, post_title, post_content, author_id, publication_date FROM blog_posts WHERE post_id = %s",
@@ -120,22 +121,23 @@ def check_login():
         password = request.form.get("password")
         
         cursor.execute("SELECT email, password FROM user")
-        user_details = cursor.fetchall()
-        
-        if email == user_details[0] and password == user_details[1]:
-            return render_template("home_page.html")
-        
-        
-        else:
-            flash("Wrong email or password !")
+        for user_details in cursor:
+            if email == user_details[0] and password == user_details[1]:
+                return redirect(url_for('home_page'))
+            
+            else:
+                flash("Wrong email or password")
+                return render_template("login.html")
+    
     return render_template("login.html")
+            
+    
 
-cursor.execute("SELECT email, password FROM user")
-user_details = cursor.fetchall()
-print(user_details)
 
-#if __name__ == ("__main__"):
-    #app.run(debug = True, use_reloader = False) 
+
+
+if __name__ == ("__main__"):
+    app.run(debug = True, use_reloader = False) 
 
 
 
