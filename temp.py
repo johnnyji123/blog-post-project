@@ -78,7 +78,7 @@ def post_blog():
 
 @app.route("/", methods = ["GET", "POST"])
 def home_page():
-    query = cursor.execute("SELECT post_title FROM blog_posts")
+    query = cursor.execute("SELECT post_id, author_id, post_title FROM blog_posts")
     post_title = render_dictionary(query)
     
     return render_template("home_page.html", post_title = post_title)
@@ -87,6 +87,7 @@ def home_page():
 @app.route("/show_blogs", methods = ["GET", "POST"])
 def show_blogs():
     query = cursor.execute("SELECT post_title, post_content, publication_date FROM blog_posts")
+                           
     blog_data = render_dictionary(query)
     
     
@@ -98,9 +99,18 @@ def render_images(filename):
     return send_from_directory(app.config['images'], filename)
 
 
+@app.route("/view_blog/<post_id>", methods = ["GET", "POST"])
+def view_blog(post_id):
+    query = cursor.execute("SELECT post_id, post_title, post_content, author_id, publication_date FROM blog_posts WHERE post_id = %s",
+                           (post_id, ))
+    
+    render_data = render_dictionary(query)
+    
+    return render_template("view_blog.html", data = render_data)
+
 
 if __name__ == ("__main__"):
-    app.run(debug = True, use_reloader = False)
+    app.run(debug = True, use_reloader = False) 
 
 
 
