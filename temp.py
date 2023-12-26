@@ -112,11 +112,13 @@ def view_blog(post_id):
     return render_template("view_blog.html", data = render_data, filename = extract_name)    
 
 
+@app.route("/login", methods = ["GET", "POST"])
+def check_login():
+    return render_template("login.html")
 
 
-
-#if __name__ == ("__main__"):
-    #app.run(debug = True, use_reloader = False) 
+if __name__ == ("__main__"):
+    app.run(debug = True, use_reloader = False) 
 
 
 
