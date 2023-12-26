@@ -18,6 +18,8 @@ cursor = db.cursor()
 
 
 # table blog_posts
+# table comments
+# table user
 
 
 app = Flask(__name__)
@@ -84,14 +86,6 @@ def home_page():
     return render_template("home_page.html", post_title = post_title)
 
 
-@app.route("/show_blogs", methods = ["GET", "POST"])
-def show_blogs():
-    query = cursor.execute("SELECT post_title, post_content, publication_date FROM blog_posts")
-                           
-    blog_data = render_dictionary(query)
-    
-    
-    return render_template("show_blogs.html", blog_data = blog_data)
 
 
 @app.route("/images/<filename>")
@@ -121,8 +115,8 @@ def view_blog(post_id):
 
 
 
-if __name__ == ("__main__"):
-    app.run(debug = True, use_reloader = False) 
+#if __name__ == ("__main__"):
+    #app.run(debug = True, use_reloader = False) 
 
 
 
