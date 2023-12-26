@@ -48,16 +48,27 @@ def post_blog():
         title = request.form.get("post_title")
         content = request.form.get("post_content")
         image = request.form.get("featured_image")
-        random_post_id = uuid.uuid4()
-        random_author_id = uuid.uuid4()
+        post_id = uuid.uuid4()
+        post_id_str = str(post_id)
+        author_id = uuid.uuid4()
+        author_id_str = str(author_id)
         publication_date = date.today()
         
+        cursor.execute(
+                """
+                INSERT INTO blog_posts
+                (post_id, post_title, post_content, author_id, publication_date, featured_image)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """,
+                (post_id_str, title, content, author_id_str, publication_date, image)
+            )                    
         
+        db.commit()
         
         
     return render_template("post_blog.html")
 
 
 
-#if __name__ == ("__main__"):
-    #app.run(debug = True, use_reloader = False)
+if __name__ == ("__main__"):
+    app.run(debug = True, use_reloader = False)
