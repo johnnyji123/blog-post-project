@@ -1,5 +1,5 @@
 import mysql.connector
-from flask import Flask, url_for, request, render_template, send_from_directory
+from flask import Flask, url_for, request, render_template, send_from_directory, flash
 import random
 import uuid
 from datetime import date
@@ -24,6 +24,7 @@ cursor = db.cursor()
 
 app = Flask(__name__)
 app.config['images'] = r'C:\Users\jj_jo\blog-post-project\Flask_app\images'
+app.secret_key = "123123123"
 
 def render_dictionary(query):
     col_names = [name[0] for name in cursor.description]
@@ -114,11 +115,27 @@ def view_blog(post_id):
 
 @app.route("/login", methods = ["GET", "POST"])
 def check_login():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        
+        cursor.execute("SELECT email, password FROM user")
+        user_details = cursor.fetchall()
+        
+        if email == user_details[0] and password == user_details[1]:
+            return render_template("home_page.html")
+        
+        
+        else:
+            flash("Wrong email or password !")
     return render_template("login.html")
 
+cursor.execute("SELECT email, password FROM user")
+user_details = cursor.fetchall()
+print(user_details)
 
-if __name__ == ("__main__"):
-    app.run(debug = True, use_reloader = False) 
+#if __name__ == ("__main__"):
+    #app.run(debug = True, use_reloader = False) 
 
 
 
