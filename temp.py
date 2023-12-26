@@ -69,6 +69,12 @@ def post_blog():
     return render_template("post_blog.html")
 
 
+@app.route("/", methods = ["GET", "POST"])
+def show_blogs():
+    query = cursor.execute("SELECT post_title, post_content, publication_date, featured_image FROM blog_posts")
+    blog_data = render_dictionary(query)
+    
+    return render_template("home_page.html", blog_data = blog_data)
 
 if __name__ == ("__main__"):
     app.run(debug = True, use_reloader = False)
