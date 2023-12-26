@@ -59,9 +59,10 @@ def post_blog():
             if file:
                 file_path = os.path.join(app.config['images'], file.filename)
                 file.save(file_path)
+       
             
-            
-        cursor.execute(
+                
+        cursor.execute( 
                 """
                 INSERT INTO blog_posts
                 (post_id, post_title, post_content, author_id, publication_date, file_path)
@@ -75,20 +76,26 @@ def post_blog():
         
     return render_template("post_blog.html")
 
-
 @app.route("/", methods = ["GET", "POST"])
+def home_page():
+    query = cursor.execute("SELECT post_title FROM blog_posts")
+    post_title = render_dictionary(query)
+    
+    return render_template("home_page.html", post_title = post_title)
+
+
+@app.route("/show_blogs", methods = ["GET", "POST"])
 def show_blogs():
     query = cursor.execute("SELECT post_title, post_content, publication_date FROM blog_posts")
     blog_data = render_dictionary(query)
     
     
-    return render_template("home_page.html", blog_data = blog_data)
+    return render_template("show_blogs.html", blog_data = blog_data)
 
 
 @app.route("/images/<filename>")
-def render_image(filename):
+def render_images(filename):
     return send_from_directory(app.config['images'], filename)
-    
 
 
 

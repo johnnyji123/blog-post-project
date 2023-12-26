@@ -8,18 +8,24 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-      <h2>home page</h2>
+      <h2>All blogs</h2>
       <li>
-          {% for row in post_title %}
+          {% for row in blog_data %}
+          
           <ul>
               {% for key, value in row.items() %}
                   {{key}}:{{value}}
-               {% endfor %}
-           </ul>
-          {% endfor %}
+              {% endfor %}
+          </ul>
+           {% endfor %}
            
-        
       </li>
-    	<script src="index.js"></script>
+      <img src = "{{url_for('render_images', filename = 'aokiji.jpg')}}" alt = "Image">
+      <form>
+          <input type = "text" placeholder = "Add comment"></input>
+          <input type = "submit" value = "Submit"></input>
+      </form>
+
+	<script src="index.js"></script>
   </body>
 </html>
