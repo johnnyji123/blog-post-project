@@ -104,9 +104,21 @@ def view_blog(post_id):
     query = cursor.execute("SELECT post_id, post_title, post_content, author_id, publication_date FROM blog_posts WHERE post_id = %s",
                            (post_id, ))
     
+
     render_data = render_dictionary(query)
     
-    return render_template("view_blog.html", data = render_data)
+    cursor.execute("SELECT file_path FROM blog_posts")
+
+    for file in cursor:
+        file_path = file[0]
+        extract_name = os.path.basename(file_path)
+        
+        
+    
+    return render_template("view_blog.html", data = render_data, filename = extract_name)    
+
+
+
 
 
 if __name__ == ("__main__"):

@@ -15,8 +15,10 @@
              {% for key, value in row.items() %}
                  {{key}}:{{value}}
               {% endfor %}
+              <img src = "{{url_for('render_images', filename = filename)}}"</img>
           </ul>
          {% endfor %}
+         
      
 	<script src="index.js"></script>
   </body>
