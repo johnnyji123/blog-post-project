@@ -9,10 +9,10 @@
   </head>
   <body>
       <h2>Post blog</h2>
-      <form action = "{{'post_blog'}}" method = "POST">
+      <form action = "{{'post_blog'}}" method = "POST" enctype="multipart/form-data">
           <input type = "text" placeholder = "post_title" name = "post_title"></input>
           <input type = "text" placeholder = "post_content" name = "post_content"></input>
-          <input type = "file" name = "featured_image"></input>
+          <input type = "file" name = "filename">
           <input type = "submit" value = "Submit"></input>
       
       </form>
