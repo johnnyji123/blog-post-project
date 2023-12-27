@@ -5,6 +5,11 @@ import uuid
 from datetime import date
 import sys
 import os
+import string
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+
+
+
 
 db = mysql.connector.connect(
         host = "localhost",
@@ -15,7 +20,7 @@ db = mysql.connector.connect(
 
 
 cursor = db.cursor()
-
+    
 
 # table blog_posts
 # table comments
@@ -25,6 +30,7 @@ cursor = db.cursor()
 app = Flask(__name__)
 app.config['images'] = r'C:\Users\jj_jo\blog-post-project\Flask_app\images'
 app.secret_key = "123123123"
+login_manager = LoginManager(app)
 
 def render_dictionary(query):
     col_names = [name[0] for name in cursor.description]
@@ -64,7 +70,7 @@ def post_blog():
                 file.save(file_path)
        
             
-                
+                    
         cursor.execute( 
                 """
                 INSERT INTO blog_posts
@@ -93,6 +99,7 @@ def home_page():
 def render_images(filename):
     return send_from_directory(app.config['images'], filename)
 
+    
 
 
 @app.route("/view_blog/<post_id>", methods = ["GET", "POST"])
@@ -114,30 +121,44 @@ def view_blog(post_id):
     return render_template("view_blog.html", data = render_data, filename = extract_name)    
 
 
+
+class User(UserMixin):
+    def __init__(self, email, password, user_id):
+        self.email = email
+        self.password = password
+        self.id = user_id
+
+
+
 @app.route("/login", methods = ["GET", "POST"])
 def check_login():
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
         
-        cursor.execute("SELECT email, password FROM user")
-        for user_details in cursor:
-            if email == user_details[0] and password == user_details[1]:
-                return redirect(url_for('home_page'))
-            
-            else:
-                flash("Wrong email or password")
-                return render_template("login.html")
+        cursor.execute("SELECT email, password, user_id FROM user WHERE email = %s ", (email, ))
+        user_details = cursor.fetchone()
+       
+        if email == user_details[1] and password == user_details[2]:
+            user = User(*user_details, )
+            login_user(user)
+            return redirect(url_for('home_page'))
+        
+        else:
+            flash("Wrong email or password")
+            return render_template("login.html")
     
-    return render_template("login.html")
+    return render_template("login.html")    
             
-    
+
+@app.route("/logout", methods = ["GET", "POST"])
+def logout():
+    return redirect(url_for(''))
 
 
 
-
-if __name__ == ("__main__"):
-    app.run(debug = True, use_reloader = False) 
+#if __name__ == ("__main__"):
+    #app.run(debug = True, use_reloader = False) 
 
 
 
