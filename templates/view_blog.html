@@ -17,11 +17,12 @@
               {% endfor %}
               <img src = "{{url_for('render_images', filename = filename)}}"</img>
           </ul>
+           <form action = "{{url_for('add_comment', post_id = row['post_id'])}}" method = "POST">
+               <input type = "text" placeholder = "add comment" name = "content"></input>
+               <input type = "submit" value = "Submit"></input>
+           </form>
          {% endfor %}
-         <form>
-             <input type = "text" placeholder = "add comment"></input>
-             <input type = "submit" value = "Submit"></input>
-         </form>
+        
      
 	<script src="index.js"></script>
   </body>
