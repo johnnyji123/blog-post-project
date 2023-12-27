@@ -86,6 +86,7 @@ def post_blog():
     return render_template("post_blog.html")
 
 @app.route("/", methods = ["GET", "POST"])
+@login_required
 def home_page():
     query = cursor.execute("SELECT post_id, author_id, post_title FROM blog_posts")
     post_title = render_dictionary(query)
@@ -129,6 +130,14 @@ class User(UserMixin):
         self.id = user_id
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    cursor.execute("SELECT email, password, user_id FROM user WHERE user_id = %s", (user_id, ))
+    user_details = cursor.fetchone()
+    
+    return User(*user_details, )
+
+
 
 @app.route("/login", methods = ["GET", "POST"])
 def check_login():
@@ -139,7 +148,7 @@ def check_login():
         cursor.execute("SELECT email, password, user_id FROM user WHERE email = %s ", (email, ))
         user_details = cursor.fetchone()
        
-        if email == user_details[1] and password == user_details[2]:
+        if email == user_details[0] and password == user_details[1]:
             user = User(*user_details, )
             login_user(user)
             return redirect(url_for('home_page'))
@@ -153,12 +162,13 @@ def check_login():
 
 @app.route("/logout", methods = ["GET", "POST"])
 def logout():
-    return redirect(url_for(''))
+    logout_user()
+    return redirect(url_for('login'))
 
 
 
-#if __name__ == ("__main__"):
-    #app.run(debug = True, use_reloader = False) 
+if __name__ == ("__main__"):
+    app.run(debug = True, use_reloader = False) 
 
 
 
