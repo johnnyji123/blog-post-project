@@ -11,8 +11,8 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 # Connecting to database
 db = mysql.connector.connect(
         host = "localhost",
-        user = "root",
-        password = "projects123123",
+        user = "user",
+        password = "psasword",
         database = "blog_posts_db"
     )
 
@@ -47,8 +47,6 @@ def render_dictionary(query):
     return data_lst
 
     
-    
-    
 # Endpoint that handles inserting information into database
 @app.route("/post_blog", methods = ["GET", "POST"])
 def post_blog():
@@ -69,8 +67,6 @@ def post_blog():
                 file_path = os.path.join(app.config['images'], file.filename)
                 file.save(file_path)
        
-            
-                    
         cursor.execute( 
                 """
                 INSERT INTO blog_posts
@@ -86,7 +82,6 @@ def post_blog():
     return render_template("post_blog.html")
 
 
-
 # Endpoint that displays blog information on front page
 @app.route("/", methods = ["GET", "POST"])
 @login_required
@@ -97,23 +92,18 @@ def home_page():
     return render_template("home_page.html", post_title = post_title)
 
 
-
-
 # Endpoint that passes down the images directory
 @app.route("/images/<filename>")
 def render_images(filename):
     return send_from_directory(app.config['images'], filename)
 
     
-
-
 # Endpoint that takes you to the blog page based on post_id
 @app.route("/view_blog/<post_id>", methods = ["GET", "POST"])
 def view_blog(post_id):
     query = cursor.execute("SELECT post_id, post_title, post_content, author_id, publication_date FROM blog_posts WHERE post_id = %s",
                            (post_id, ))
     
-
     render_data = render_dictionary(query)
     
     cursor.execute("SELECT file_path FROM blog_posts")
@@ -141,7 +131,6 @@ class User(UserMixin):
         self.id = user_id
 
 
-
 # Loading user from database
 @login_manager.user_loader
 def load_user(user_id):
@@ -149,7 +138,6 @@ def load_user(user_id):
     user_details = cursor.fetchone()
     
     return User(*user_details, )
-
 
 
 # Check if email and password mtaches the values in the database
@@ -174,13 +162,11 @@ def check_login():
     return render_template("login.html")    
             
 
-
 # Endpoint that logs out the user
 @app.route("/logout", methods = ["GET", "POST"])
 def logout():
     logout_user()
     return redirect(url_for('check_login'))
-
 
 
 # Add comments based on post id
@@ -191,15 +177,10 @@ def add_comment(post_id):
     comment = request.form.get("content")
     timestamp = date.today()
 
-
-    
     cursor.execute("INSERT INTO comments (comment_id, post_id,  username, content, timestamp) VALUES (%s, %s, %s ,%s, %s) ",
                    (comment_id, post_id, user_email, comment, timestamp ))
     
-    
     db.commit()
-    
-      
     
     return redirect(url_for('view_blog', post_id = post_id))
     
@@ -210,7 +191,6 @@ def add_comment(post_id):
 def delete_comment(post_id, comment_id):
     cursor.execute("DELETE FROM comments WHERE post_id = %s AND comment_id = %s",
                    (post_id, comment_id))
-    
     
     db.commit()
     return redirect(url_for('view_blog', post_id = post_id))
