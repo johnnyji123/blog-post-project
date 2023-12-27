@@ -22,6 +22,15 @@
                <input type = "submit" value = "Submit"></input>
            </form>
          {% endfor %}
+         <li>
+             {% for user_row in user_details %}
+                 <ul>
+                     {% for key, value in user_row.items() %}
+                         {{key}}:{{value}}
+                     {% endfor %}
+                 </ul>
+             {% endfor %}
+         </li>
         
      
 	<script src="index.js"></script>

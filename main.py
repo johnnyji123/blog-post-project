@@ -118,8 +118,13 @@ def view_blog(post_id):
         extract_name = os.path.basename(file_path)
         
         
+    user_comment = cursor.execute("SELECT comment_id, username, content, timestamp FROM comments WHERE post_id = %s",
+                   (post_id, ))
     
-    return render_template("view_blog.html", data = render_data, filename = extract_name)    
+    user_details = render_dictionary(user_comment)
+       
+    
+    return render_template("view_blog.html", data = render_data, filename = extract_name, user_details = user_details)    
 
 
 
@@ -184,6 +189,8 @@ def add_comment(post_id):
     
     
     db.commit()
+    
+      
     
     return redirect(url_for('view_blog', post_id = post_id))
     
