@@ -118,7 +118,7 @@ def view_blog(post_id):
         extract_name = os.path.basename(file_path)
         
         
-    user_comment = cursor.execute("SELECT comment_id, username, content, timestamp FROM comments WHERE post_id = %s",
+    user_comment = cursor.execute("SELECT post_id, comment_id, username, content, timestamp FROM comments WHERE post_id = %s",
                    (post_id, ))
     
     user_details = render_dictionary(user_comment)
@@ -194,6 +194,16 @@ def add_comment(post_id):
     
     return redirect(url_for('view_blog', post_id = post_id))
     
+
+
+@app.route("/delete_comment/<post_id>/<comment_id>", methods = ["GET", "POST"])
+def delete_comment(post_id, comment_id):
+    cursor.execute("DELETE FROM comments WHERE post_id = %s AND comment_id = %s",
+                   (post_id, comment_id))
+    
+    
+    db.commit()
+    return redirect(url_for('view_blog', post_id = post_id))
 
 
 if __name__ == ("__main__"):

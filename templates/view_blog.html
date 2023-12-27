@@ -29,6 +29,9 @@
                          {{key}}:{{value}}
                      {% endfor %}
                  </ul>
+                 <form action = "{{url_for('delete_comment', post_id = user_row['post_id'], comment_id = user_row['comment_id'])}}" method = "POST">
+                     <input type = "submit" value = "Delete comment"></input>
+                 </form>
              {% endfor %}
          </li>
         
