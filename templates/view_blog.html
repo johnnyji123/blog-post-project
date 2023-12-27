@@ -13,8 +13,11 @@
          {% for row in data %}
          <ul>
              {% for key, value in row.items() %}
-                 {{key}}:{{value}}
+                 {{key}}:{{value}}  
               {% endfor %}
+                <form action = "{{url_for('update_post_page')}}" method = "POST">
+                    <input type = "submit" value = "Edit"></input>
+                </form>   
               <img src = "{{url_for('render_images', filename = filename)}}"</img>
           </ul>
            <form action = "{{url_for('add_comment', post_id = row['post_id'])}}" method = "POST">

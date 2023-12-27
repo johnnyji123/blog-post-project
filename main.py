@@ -8,9 +8,7 @@ import os
 import string
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
-
-
-
+# Connecting to database
 db = mysql.connector.connect(
         host = "localhost",
         user = "root",
@@ -21,7 +19,7 @@ db = mysql.connector.connect(
 
 cursor = db.cursor()
     
-
+    
 # table blog_posts
 # table comments
 # table user
@@ -32,6 +30,8 @@ app.config['images'] = r'C:\Users\jj_jo\blog-post-project\Flask_app\images'
 app.secret_key = "123123123"
 login_manager = LoginManager(app)
 
+
+# Function to render columns and values in database
 def render_dictionary(query):
     col_names = [name[0] for name in cursor.description]
     data_lst = []
@@ -49,7 +49,7 @@ def render_dictionary(query):
     
     
     
-
+# Endpoint that handles inserting information into database
 @app.route("/post_blog", methods = ["GET", "POST"])
 def post_blog():
     if request.method == "POST":
@@ -85,6 +85,9 @@ def post_blog():
         
     return render_template("post_blog.html")
 
+
+
+# Endpoint that displays blog information on front page
 @app.route("/", methods = ["GET", "POST"])
 @login_required
 def home_page():
@@ -96,6 +99,7 @@ def home_page():
 
 
 
+# Endpoint that passes down the images directory
 @app.route("/images/<filename>")
 def render_images(filename):
     return send_from_directory(app.config['images'], filename)
@@ -103,6 +107,7 @@ def render_images(filename):
     
 
 
+# Endpoint that takes you to the blog page based on post_id
 @app.route("/view_blog/<post_id>", methods = ["GET", "POST"])
 def view_blog(post_id):
     query = cursor.execute("SELECT post_id, post_title, post_content, author_id, publication_date FROM blog_posts WHERE post_id = %s",
@@ -128,6 +133,7 @@ def view_blog(post_id):
 
 
 
+# User class to handle logged in user
 class User(UserMixin):
     def __init__(self, email, password, user_id):
         self.email = email
@@ -135,6 +141,8 @@ class User(UserMixin):
         self.id = user_id
 
 
+
+# Loading user from database
 @login_manager.user_loader
 def load_user(user_id):
     cursor.execute("SELECT email, password, user_id FROM user WHERE user_id = %s", (user_id, ))
@@ -144,6 +152,7 @@ def load_user(user_id):
 
 
 
+# Check if email and password mtaches the values in the database
 @app.route("/login", methods = ["GET", "POST"])
 def check_login():
     if request.method == "POST":
@@ -166,7 +175,7 @@ def check_login():
             
 
 
-
+# Endpoint that logs out the user
 @app.route("/logout", methods = ["GET", "POST"])
 def logout():
     logout_user()
@@ -174,7 +183,7 @@ def logout():
 
 
 
-
+# Add comments based on post id
 @app.route("/add_comment/<post_id>", methods = ["GET", "POST"])
 def add_comment(post_id):
     comment_id = "".join(random.choices(string.ascii_lowercase, k = 5))
@@ -196,6 +205,7 @@ def add_comment(post_id):
     
 
 
+# Delete comment based on post id and comment id 
 @app.route("/delete_comment/<post_id>/<comment_id>", methods = ["GET", "POST"])
 def delete_comment(post_id, comment_id):
     cursor.execute("DELETE FROM comments WHERE post_id = %s AND comment_id = %s",
@@ -204,6 +214,41 @@ def delete_comment(post_id, comment_id):
     
     db.commit()
     return redirect(url_for('view_blog', post_id = post_id))
+
+
+# Redirect to edit_post page
+@app.route("/update_post", methods = ["GET", "POST"])
+def update_post_page():
+    return render_template("edit_post.html")
+
+
+
+# Edit blog post values
+@app.route("/edit_post/<post_id>", methods = ["GET", "POST"])
+def edit_post(post_id):
+    current_date = date.today()
+    post_title = request.form.get("post_title")
+    post_content = request.form.get("post_content")
+    
+    if 'filename' in request.files:
+        file = request.files['filename']
+        
+        if file:
+            file_path = os.path.join(app.config['images'], file.filename)
+            file.save(file_path)
+            
+    cursor.execute(
+            """
+            UPDATE blog_posts
+            SET post_title = %s, post_content = %s, publication_date = %s, file_path = %s 
+            WHERE post_id = %s
+            """,
+            (post_title, post_content, current_date, file_path, post_id)
+        )
+    
+    db.commit()
+    return redirect(url_for('edit_post', post_id = post_id))
+
 
 
 if __name__ == ("__main__"):
